@@ -1,7 +1,7 @@
 {
-  "name": "tictactoe",
-  "version": "0.0.0",
-  "license": "MIT",
+  "name": "ng2-tictactoe",
+  "version": "1.0.0",
+  "license": "GPL-3.0",
   "angular-cli": {},
   "scripts": {
     "ng": "ng",
@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^2.3.1",
     "@angular/platform-browser-dynamic": "^2.3.1",
     "@angular/router": "^3.3.1",
+    "@ngtools/webpack": "^1.2.4",
     "core-js": "^2.4.1",
     "rxjs": "^5.0.1",
     "ts-helpers": "^1.1.1",
@@ -42,5 +43,23 @@
     "ts-node": "1.2.1",
     "tslint": "^4.3.0",
     "typescript": "~2.0.3"
-  }
+  },
+  "description": "This project was generated with [angular-cli](https://github.com/angular/angular-cli) version 1.0.0-beta.29.",
+  "main": "karma.conf.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EnslavedEagle/-NG2-TicTacToe.git"
+  },
+  "keywords": [
+    "tic",
+    "tac",
+    "toe",
+    "angular",
+    "2"
+  ],
+  "author": "Patryk Bernasiewicz",
+  "bugs": {
+    "url": "https://github.com/EnslavedEagle/-NG2-TicTacToe/issues"
+  },
+  "homepage": "https://github.com/EnslavedEagle/-NG2-TicTacToe#readme"
 }
