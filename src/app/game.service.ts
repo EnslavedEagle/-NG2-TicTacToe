@@ -15,10 +15,8 @@ export class GameService {
 	initGame(userStarts = false): Observable<any> {
 		var token = localStorage.getItem('token');
 		if(token === null) {
-			console.log('No token found. Starting new game');
 			return this.startNewGame(userStarts);
 		} else {
-			console.log('Saved token found: '+token+' Loading game status');
 			return this.getStatus(token);
 		}
 	}
@@ -40,7 +38,6 @@ export class GameService {
 	}
 
 	getStatus(token): Observable<any> {
-		console.log('Getting game status with token ', token);
 		let headers = new Headers({'Content-Type':'application/json', 'token': token});
 		let options = {
 			headers: headers
@@ -68,7 +65,6 @@ export class GameService {
 
 	saveToken(newToken): void {
 		if(newToken !== undefined && localStorage.getItem('token') === null) {
-			console.log('Saving token: ' + newToken);
 			localStorage.setItem('token', newToken);
 		}
 	}

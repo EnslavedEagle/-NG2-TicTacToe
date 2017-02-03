@@ -6,7 +6,6 @@ import { Component } from '@angular/core';
   	<h1>Tic Tac Toe</h1>
   	<app-game></app-game>
   `,
-  styleUrls: ['./app.component.css']
+  styles: [`h1 { text-align: center; }`]
 })
-export class AppComponent {
-}
+export class AppComponent { }

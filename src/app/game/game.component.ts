@@ -6,16 +6,21 @@ import { Game } from '../game';
   selector: 'app-game',
   template: `
   	<div>
-  		<div class="gameOver" *ngIf="outcome !== null">
-			<div class="outcome">
-				Game is over! {{outcome}}
+  		<div class="info">
+	  		<div class="gameOver" *ngIf="outcome !== null">
+				<div class="outcome">
+					Game is over! {{outcome}}
+				</div>
+		  	</div>
+		  	<div class="error" *ngIf="error">
+		  		<p>{{error}}</p>
+		  	</div>
+		  	<div class="buttons" *ngIf="outcome !== null || token === undefined">
+				<button (click)="restartGame(true)">I want to start</button>
+				<button (click)="restartGame(false)">I want the Bot to start</button>
 			</div>
+	  		<div class="turn" *ngIf="whoseTurn !== null">{{whoseTurn}}'s Turn</div>
 	  	</div>
-	  	<div class="buttons" *ngIf="outcome !== null || token === undefined">
-			<button (click)="restart(true)">I want to start</button>
-			<button (click)="restart(false)">I want the Bot to start</button>
-		</div>
-  		<div class="turn" *ngIf="whoseTurn !== null">{{whoseTurn}}'s Turn</div>
   		<app-board
   			*ngIf="token !== undefined"
   			[board]="board"
@@ -35,6 +40,7 @@ export class GameComponent implements OnInit {
 	winner: any;
 	outcome: string = null;
 	whoseTurn: string = 'Player';
+	error: string;
 
 	constructor(private game: GameService) { }
 
@@ -43,7 +49,7 @@ export class GameComponent implements OnInit {
 	}
 
 	handleResponse(res): void {
-		console.log('Got response: ', res);
+		this.error = null;
 		this.token = res.token || this.token;
 		this.game.saveToken(this.token);
 		this.board = res.game.board || this.board;
@@ -55,7 +61,7 @@ export class GameComponent implements OnInit {
 	}
 
 	handleError(error): void {
-		console.error('There was an error: ', error);
+		this.error = 'Error: ' + error;
 	}
 
 	initGame() {
@@ -66,8 +72,8 @@ export class GameComponent implements OnInit {
 			);
 	}
 
-	restart(userStarts) {
-		console.log('Trying to start a new game');
+	// Reset the outcome and re-init the game.
+	restartGame(userStarts) {
 		this.outcome = null;
 		this.game.startNewGame(userStarts)
 			.subscribe(
@@ -76,6 +82,7 @@ export class GameComponent implements OnInit {
 			);
 	}
 
+	// Refresh the game data from the API
 	checkGameStatus() {
 		this.game.getStatus(this.token)
 			.subscribe(
@@ -84,8 +91,9 @@ export class GameComponent implements OnInit {
 			);
 	}
 
+	// Let the server know that the user made a move
 	handleUserMove(move) {
-		if(this.checkMoves()) {
+		if(this.canPlayerDoAnything()) {
 			this.whoseTurn = 'Bot';
 			this.game.sendMove(move.row, move.col, this.token)
 				.subscribe(
@@ -94,12 +102,12 @@ export class GameComponent implements OnInit {
 				);
 		} else {
 			this.checkWinner();
-			console.error('No moves possible or the game is over.');
 		}
 	}
 
+	// Check if the game has been won
 	checkWinner(): void {
-		if(this.getPossibleMoves() <= 0 && this.winner === null) {
+		if(!this.canPlayerDoAnything()) {
 			this.setOutcome('No moves possible, the game is a tie.');
 		} else if(this.winner !== null) {
 			if(this.winner.figure === 'x') {
@@ -110,14 +118,14 @@ export class GameComponent implements OnInit {
 		}
 	}
 
-	checkMoves(): boolean {
-		return this.getPossibleMoves() > 0 && this.winner === null;
+	// Check if the user can still do anything on the board
+	canPlayerDoAnything(): boolean {
+		return this.anyPossibleMoves() !== false && this.winner === null;
 	}
 
-	getPossibleMoves(): number {
-		let moves = 0;
-		this.board.forEach((x) => { moves += x.includes(null) ? 1 : 0; });
-		return moves;
+	// Check the board for any possible moves
+	anyPossibleMoves(): boolean {
+		return this.board.find(x => x.includes(null)) !== undefined;
 	}
 
 
