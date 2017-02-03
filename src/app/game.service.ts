@@ -12,25 +12,27 @@ export class GameService {
 
 	constructor(private http: Http) { }
 
-	initGame(): Observable<any> {
+	initGame(userStarts = false): Observable<any> {
 		var token = localStorage.getItem('token');
 		if(token === null) {
 			console.log('No token found. Starting new game');
-			return this.startNewGame();
+			return this.startNewGame(userStarts);
 		} else {
 			console.log('Saved token found: '+token+' Loading game status');
 			return this.getStatus(token);
 		}
 	}
 
-	startNewGame(): Observable<any> {
+	startNewGame(userStarts): Observable<any> {
+		this.clearToken();
+		
 		let headers = new Headers({'Content-Type':'application/json'});
 		let options = {
 			headers: headers
 		};
 		let body = {
 			"player": "x",
-			"playerStarts": false
+			"playerStarts": userStarts
 		};
 		return this.http.post(this.api_url, body, options)
 			.map((res:Response) => res.json())
@@ -65,13 +67,17 @@ export class GameService {
 	}
 
 	saveToken(newToken): void {
-		console.log('Saving token: ' + newToken);
-		if(newToken !== undefined) {
+		if(newToken !== undefined && localStorage.getItem('token') === null) {
+			console.log('Saving token: ' + newToken);
 			localStorage.setItem('token', newToken);
 		}
 	}
 
 	loadToken(): string {
 		return localStorage.getItem('token');
+	}
+
+	clearToken(): void {
+		localStorage.removeItem('token');
 	}
 }

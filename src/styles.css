@@ -1,1 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
+
+body {
+	background: #FFFFFF;
+	font-family: 'Ubuntu', Verdana, sans-serif;
+	color: #212121;
+}
+
+button {
+	background: #E64A19;
+	border: 0;
+	border-radius: 3px;
+	color: #FFFFFF;
+	cursor: pointer; cursor: hand;
+	font-weight: bold;
+	font-size: 1.1em;
+	padding: 4px 6px;
+	margin: 3px 5px 8px;
+	text-shadow: 1px 1px 3px rgba(0, 0, 0, .3);
+	box-shadow: inset 0px 1px 6px rgba(0, 0, 0, .1);
+}
+button:hover {
+	background: #FF5722;
+	box-shadow: inset 0px 1px 6px rgba(0, 0, 0, .2);
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Oswald', sans-serif;
+}
