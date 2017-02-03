@@ -37,7 +37,7 @@ export class GameService {
 			.catch((error:any) => Observable.throw(error.json().error || 'Game start failed: Server Error'));
 	}
 
-	getStatus(token): any {
+	getStatus(token): Observable<any> {
 		console.log('Getting game status with token ', token);
 		let headers = new Headers({'Content-Type':'application/json', 'token': token});
 		let options = {
@@ -52,16 +52,14 @@ export class GameService {
 			.catch((error:any) => Observable.throw(error.json().error || 'Status check failed: Server Error'));
 	}
 
-	sendMove(col, row) {
-		let headers = new Headers({'Content-Type':'application/json'});
+	sendMove(x, y, token): any {
+		let headers = new Headers({'Content-Type':'application/json', 'token': token });
 		let options = {
 			headers: headers
 		};
-		let body = {
-			"x": col,
-			"y": row
-		};
-		return this.http.post(this.api_url, options)
+		let body = { x: x, y: y };
+
+		return this.http.put(this.api_url, body, options)
 			.map((res:Response) => res.json())
 			.catch((error:any) => Observable.throw(error.json().error || 'Player move failed: Sever Error'));
 	}

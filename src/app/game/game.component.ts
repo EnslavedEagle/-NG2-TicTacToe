@@ -36,9 +36,11 @@ export class GameComponent implements OnInit {
 				response => {
 					console.log(response);
 					this.token = response.token;
-					this.board = response.game.board;
-					this.player = response.game.player;
-					this.winner = response.game.winner;
+					this.updateData(
+						response.game.board,
+						response.game.player,
+						response.game.winner
+					);
 					this.whoseTurn = 'player';
 					this.game.saveToken(this.token);
 				},
@@ -50,9 +52,11 @@ export class GameComponent implements OnInit {
 		this.game.getStatus(this.token)
 			.subscribe(
 				response => {
-					this.board = response.game.board;
-					this.player = response.game.player;
-					this.winner = response.game.winner;
+					this.updateData(
+						response.game.board,
+						response.game.player,
+						response.game.winner
+					);
 					console.log('Updated data: ', this.board, this.player, this.winner);
 				},
 				error => console.log(error)
@@ -60,7 +64,25 @@ export class GameComponent implements OnInit {
 	}
 
 	handleUserMove(move) {
-		
+		this.whoseTurn = 'bot';
+		this.game.sendMove(move.row, move.col, this.token)
+			.subscribe(
+				response => {
+					console.log('Got response from movement.', response);
+					this.updateData(
+						response.game.board,
+						response.game.player,
+						response.game.winner
+					);
+				},
+				error => console.log(error)
+			);
+	}
+
+	updateData(board, player, winner) {
+		this.board = board;
+		this.player = player;
+		this.winner = winner;
 	}
 
 }
