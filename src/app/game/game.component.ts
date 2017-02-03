@@ -5,11 +5,15 @@ import { GameService } from '../game.service';
   selector: 'app-game',
   template: `
   	<div>
-  		<p><b>Game Token:</b> <strong *ngIf="gameToken">{{gameToken}}</strong></p>
+  		<p><b>Game Token:</b> <strong *ngIf="token !== undefined">{{token}}</strong></p>
   		<p>Answer from API:</p>
   		<button (click)="checkGameStatus()">
   			Check status
   		</button>
+  		<app-board
+  			[board]="board"
+  			(userMove)="handleUserMove($event)">
+  		</app-board>
   	</div>
   `,
   styleUrls: ['./game.component.css']
@@ -17,62 +21,46 @@ import { GameService } from '../game.service';
 export class GameComponent implements OnInit {
 
 	apiResponse: Promise<any>;
-	gameToken: string;
+	token: string;
 	board: any[];
 	player: any;
 	winner: any;
 
+	whoseTurn: string = 'bot';
+
 	constructor(private game: GameService) { }
 
 	ngOnInit() {
-		this.game.startGame()
+		this.game.initGame()
 			.subscribe(
 				response => {
-					this.gameToken = response.token;
+					console.log(response);
+					this.token = response.token;
 					this.board = response.game.board;
 					this.player = response.game.player;
 					this.winner = response.game.winner;
-
-					this.saveState({
-						gameToken: this.gameToken,
-						board: this.board,
-						player: this.player,
-						winner: this.winner
-					})
+					this.whoseTurn = 'player';
+					this.game.saveToken(this.token);
 				},
 				error => console.log(error)
 			);
 	}
 
 	checkGameStatus() {
-		this.game.getStatus()
+		this.game.getStatus(this.token)
 			.subscribe(
 				response => {
 					this.board = response.game.board;
 					this.player = response.game.player;
 					this.winner = response.game.winner;
+					console.log('Updated data: ', this.board, this.player, this.winner);
 				},
 				error => console.log(error)
 			);
 	}
 
-	saveState(gameState: any) {
-		localStorage.setItem('gameData', JSON.stringify({
-			gameToken: gameState.gameToken || '',
-			board: gameState.board || [],
-			player: gameState.player || '',
-			winner: gameState.winner || null
-		}));
-	}
-
-	loadState() {
-		var game = JSON.parse(localStorage.getItem('gameData'));
-		if(game !== undefined) {
-			this.gameToken = game.gameToken;
-			this.board = game.board;
-			this.player = game.player;
-			this.winner = game.winner;
-		}
+	handleUserMove(move) {
+		
 	}
 
 }

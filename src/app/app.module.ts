@@ -7,11 +7,13 @@ import { AppComponent } from './app.component';
 import { GameComponent } from './game/game.component';
 
 import { GameService } from './game.service';
+import { BoardComponent } from './board/board.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GameComponent
+    GameComponent,
+    BoardComponent
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Input } from '@angular/core';
 import { Http, Headers, Request, RequestOptions, Response } from '@angular/http';
 
 import { Observable } from 'rxjs/Rx';
@@ -10,7 +10,20 @@ import 'rxjs/add/operator/catch';
 export class GameService {
 	private api_url: string = "http://interview.314.tt/api/game";
 
-	startGame(): Observable<any> {
+	constructor(private http: Http) { }
+
+	initGame(): Observable<any> {
+		var token = localStorage.getItem('token');
+		if(token === null) {
+			console.log('No token found. Starting new game');
+			return this.startNewGame();
+		} else {
+			console.log('Saved token found: '+token+' Loading game status');
+			return this.getStatus(token);
+		}
+	}
+
+	startNewGame(): Observable<any> {
 		let headers = new Headers({'Content-Type':'application/json'});
 		let options = {
 			headers: headers
@@ -24,21 +37,43 @@ export class GameService {
 			.catch((error:any) => Observable.throw(error.json().error || 'Game start failed: Server Error'));
 	}
 
-	getStatus(gameToken): any {
-		let headers = new Headers({'Content-Type':'application/json'});
+	getStatus(token): any {
+		console.log('Getting game status with token ', token);
+		let headers = new Headers({'Content-Type':'application/json', 'token': token});
 		let options = {
-			headers: headers,
-			token: gameToken
+			headers: headers
 		};
 		return this.http.get(this.api_url, options)
-			.map((res:Response) => res.json())
+			.map((res:Response) => {
+				let data = res.json();
+				data.token = token;
+				return data;
+			})
 			.catch((error:any) => Observable.throw(error.json().error || 'Status check failed: Server Error'));
 	}
 
-	testAPI(): Observable<any> {
-		return this.http.get('http://localhost:8080/hello/Patryk');
+	sendMove(col, row) {
+		let headers = new Headers({'Content-Type':'application/json'});
+		let options = {
+			headers: headers
+		};
+		let body = {
+			"x": col,
+			"y": row
+		};
+		return this.http.post(this.api_url, options)
+			.map((res:Response) => res.json())
+			.catch((error:any) => Observable.throw(error.json().error || 'Player move failed: Sever Error'));
 	}
 
-	constructor(private http: Http) { }
+	saveToken(newToken): void {
+		console.log('Saving token: ' + newToken);
+		if(newToken !== undefined) {
+			localStorage.setItem('token', newToken);
+		}
+	}
 
+	loadToken(): string {
+		return localStorage.getItem('token');
+	}
 }
